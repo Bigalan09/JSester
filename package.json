@@ -6,7 +6,9 @@
   "bin": "cli.js",
   "scripts": {
     "start": "cross-env NODE_ENV=development electron .",
-    "dev": "cross-env NODE_ENV=development electron . --debug"
+    "dev": "cross-env NODE_ENV=development electron . --debug",
+    "package": "cross-env NODE_ENV=production electron-packager . JSester --all --out=out",
+    "package-win": "cross-env NODE_ENV=production electron-packager . JSester --platform=win32 --arch=x64 --out=out"
   },
   "repository": "https://github.com/bigalan/jsester",
   "keywords": [

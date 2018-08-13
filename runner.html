@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" style="height: 100%;">
 <head>
-    <style>
+    <style id="loader">
         #loading .spinner {
             margin: 100px auto;
             width: 50px;
@@ -63,13 +63,6 @@
             }
         }
     </style>
-    <style type="text/css">
-        body {
-            margin: 0;
-            padding: 0;
-            border: 0;
-        }
-    </style>
     <script type="text/javascript">
         var receivedCall = null;
         window.load = function (js, html, css) {
@@ -97,6 +90,9 @@
         var geval = eval;
         var loading = document.getElementById('loading');
         loading.parentNode.removeChild(loading);
+        var loader = document.getElementById('loader');
+        loader.parentNode.removeChild(loader);
+
         document.body.style.height = '100%';
 
         window.load = function (js, html, css) {

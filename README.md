@@ -1,5 +1,5 @@
 # JSester
-An offline desktop html, css and javascript editor using [Monaco](https://microsoft.github.io/monaco-editor/) and [Electron](https://electronjs.org/).
+JSester is an offline tool for testing and showcasing user-created HTML, CSS and JavaScript code snippets, using [Monaco](https://microsoft.github.io/monaco-editor/) and [Electron](https://electronjs.org/).
 
 ## To Use
 

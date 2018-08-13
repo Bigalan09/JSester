@@ -95,10 +95,6 @@
             overflow: hidden;
         }
 
-        #p4 {
-            background-color: #ffffff;
-        }
-
         #actions {
             height: 60px;
             font-size: 14px;
@@ -169,7 +165,7 @@
             text-decoration: none;
         }
 
-        .editor {
+        .editor, .run {
             height: calc(100% - 40px);
             position: relative;
             top: 40px;
@@ -211,7 +207,6 @@
                 <div class="windowLabelCont">
                     <a href="#" class="windowLabel" data-panel="html" data-popover-trigger="html">
                         <span class="label">HTML</span>
-
                     </a>
                 </div>
             </div>
@@ -236,13 +231,13 @@
                 </div>
             </div>
             <div id="p4" class="panel-h panel" style="height: calc(50% - 0.5px);">
+                <div id="preview" class="run"></div>
                 <div class="windowLabelCont">
                     <a href="#" class="windowLabel">
                         <span class="label">Preview</span>
 
                     </a>
                 </div>
-                <div id="preview"></div>
             </div>
         </div>
     </div>
@@ -286,6 +281,10 @@
     <script>
         // require node modules before loader.js comes in
         var path = require('path');
+        let htmlEditor = null;
+        let cssEditor = null;
+        let jsEditor = null;
+        let previewContainer = document.querySelector('#preview');
 
         function uriFromPath(_path) {
             var pathName = path.resolve(_path).replace(/\\/g, '/');
@@ -301,8 +300,9 @@
         self.module = undefined;
         // workaround monaco-typescript not understanding the environment
         self.process.browser = true;
+
         amdRequire(['vs/editor/editor.main'], function () {
-            let htmlEditor = monaco.editor.create(htmlArea, {
+            htmlEditor = monaco.editor.create(htmlArea, {
                 language: 'html',
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
@@ -313,7 +313,7 @@
                     enabled: false
                 }
             });
-            let cssEditor = monaco.editor.create(cssArea, {
+            cssEditor = monaco.editor.create(cssArea, {
                 language: 'css',
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
@@ -324,7 +324,7 @@
                     enabled: false
                 }
             });
-            let jsEditor = monaco.editor.create(jsArea, {
+            jsEditor = monaco.editor.create(jsArea, {
                 language: 'javascript',
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
@@ -335,7 +335,50 @@
                     enabled: false
                 }
             });
+
+            /*
+            htmlEditor.onDidChangeModelContent((a, b, c) => {
+                doRun(previewContainer);
+            });
+            cssEditor.onDidChangeModelContent((a, b, c) => {
+                doRun(previewContainer);
+            });
+            jsEditor.onDidChangeModelContent((a, b, c) => {
+                doRun(previewContainer);
+            });
+            */
         });
+
+        var runIframe = null,
+            runIframeHeight = 0;
+
+        document.querySelector('#run').addEventListener('click', () => {
+            doRun(previewContainer);
+        });
+
+        function doRun(runContainer) {
+            if (runIframe) {
+                // Unload old iframe
+                runContainer.removeChild(runIframe);
+            }
+
+            // Load new iframe
+            runIframe = document.createElement('iframe');
+            runIframe.id = 'runner';
+            runIframe.src = 'runner.html';
+            runIframe.className = 'run-iframe';
+            runIframe.style.boxSizing = 'border-box';
+            runIframe.style.height = '100%';
+            runIframe.style.width = '100%';
+            runIframe.style.border = '0';
+            runIframe.frameborder = '0';
+            runContainer.appendChild(runIframe);
+
+            runIframe.addEventListener('load', function (e) {
+                runIframe.contentWindow.load(jsEditor.model.getValue(), htmlEditor.model.getValue(), cssEditor.model
+                    .getValue());
+            });
+        }
     </script>
 </body>
 

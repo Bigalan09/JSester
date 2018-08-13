@@ -215,7 +215,7 @@
                 </div>
 
                 <div class="actionItem">
-                    <a class="aiButton" id="savenew" title="Shortcut: Command/Ctrl + S" href="#save">
+                    <a class="aiButton" id="save" title="Shortcut: Command/Ctrl + S" href="#save">
                         <i class="fas fa-save fa-fw"></i>
                         Save</a>
                 </div>
@@ -425,6 +425,10 @@
             runIframe.style.border = '0';
             runIframe.frameborder = '0';
             runContainer.appendChild(runIframe);
+
+            jsEditor.trigger('anyString', 'editor.action.formatDocument');
+            htmlEditor.trigger('anyString', 'editor.action.formatDocument');
+            cssEditor.trigger('anyString', 'editor.action.formatDocument');
 
             runIframe.addEventListener('load', function (e) {
                 runIframe.contentWindow.load(jsEditor.model.getValue(), htmlEditor.model.getValue(), cssEditor.model

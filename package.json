@@ -38,6 +38,7 @@
     "glob": "^7.1.0",
     "highlight.js": "^9.3.0",
     "monaco-editor": "^0.14.2",
+    "mousetrap": "^1.6.2",
     "update-electron-app": "^1.1.1"
   }
 }

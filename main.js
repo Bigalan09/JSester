@@ -47,26 +47,6 @@ function initialize() {
             mainWindow = null;
         });
 
-        globalShortcut.register('CommandOrControl+Enter', () => {
-            mainWindow
-                .webContents
-                .send('run', {});
-        });
-        globalShortcut.register('CommandOrControl+N', () => {
-            mainWindow
-                .webContents
-                .send('new', {});
-        });
-        globalShortcut.register('CommandOrControl+S', () => {
-            mainWindow
-                .webContents
-                .send('save', {});
-        });
-        globalShortcut.register('CommandOrControl+P', () => {
-            mainWindow
-                .webContents
-                .send('settings', {});
-        });
         globalShortcut.register('CommandOrControl+F11', () => {
             if (mainWindow.isFullScreen()) {
                 mainWindow.maximize();

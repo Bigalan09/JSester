@@ -370,6 +370,7 @@
     </div>
     <script src="split.js"></script>
     <script>
+
         Split(['.panel-v.left', '.panel-v.right'], {
             gutterSize: 2,
             cursor: 'col-resize'
@@ -392,6 +393,8 @@
         let htmlArea = document.querySelector('#htmlEditor');
         let cssArea = document.querySelector('#cssEditor');
         let jsArea = document.querySelector('#jsEditor');
+
+        var Mousetrap = require('mousetrap');
     </script>
     <script>
         // Monaco uses a custom amd loader that overrides node's require.
@@ -406,6 +409,24 @@
     </script>
     <script>
         // require node modules before loader.js comes in
+        Mousetrap.bind(['command+n', 'ctrl+n'], function () {
+            doNew();
+            return false;
+        });
+        Mousetrap.bind(['command+s', 'ctrl+s'], function () {
+            doSave();
+            return false;
+        });
+        Mousetrap.bind(['command+p', 'ctrl+p'], function () {
+            doSettings();
+            return false;
+        });
+
+        Mousetrap.bind(['command+enter', 'ctrl+enter'], function () {
+            doRun(previewContainer);
+            return false;
+        });
+
         var path = require('path');
         let htmlEditor = null;
         let cssEditor = null;
@@ -461,6 +482,38 @@
                     enabled: false
                 }
             });
+
+            let saveBinding = {
+                id: 'save-bind',
+
+                // A label of the action that will be presented to the user.
+                label: 'Save',
+
+                // An optional array of keybindings for the action.
+                keybindings: [
+                    monaco.KeyMod.CtrlCmd | monaco.KeyCode.S,
+                ],
+
+                // A precondition for this action.
+                precondition: null,
+
+                // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
+                keybindingContext: null,
+
+                contextMenuGroupId: 'navigation',
+
+                contextMenuOrder: 1.5,
+
+                // Method that will be executed when the action is triggered.
+                // @param editor The editor instance is passed in as a convinience
+                run: function (ed) {
+                    doSave();
+                    return null;
+                }
+            };
+            htmlEditor.addAction(saveBinding);
+            cssEditor.addAction(saveBinding);
+            jsEditor.addAction(saveBinding);
 
             /*
             htmlEditor.onDidChangeModelContent((a, b, c) => {

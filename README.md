@@ -1,5 +1,5 @@
 # JSester
-An offline desktop html, css and javascript editor using Monaco and Electron.
+An offline desktop html, css and javascript editor using [Monaco](https://microsoft.github.io/monaco-editor/) and [Electron](https://electronjs.org/).
 
 ## To Use
 
@@ -8,10 +8,13 @@ To clone and run this repository you'll need [Git](https://git-scm.com) and [Nod
 ```bash
 # Clone this repository
 git clone https://github.com/bigalan/JSester
+
 # Go into the repository
 cd JSester
+
 # Install dependencies
 npm install
+
 # Run the app
 npm start
 ```
@@ -21,6 +24,7 @@ Note: If you're using Linux Bash for Windows, [see this guide](https://www.howto
 ## Resources for Learning Electron
 
 - [electronjs.org/docs](https://electronjs.org/docs) - all of Electron's documentation
+- [monaco editor](https://microsoft.github.io/monaco-editor/) - Monaco editor documentation
 
 ## License
 

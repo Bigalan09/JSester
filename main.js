@@ -7,8 +7,7 @@ const glob = require('glob');
 const {
     app,
     BrowserWindow,
-    globalShortcut,
-    ipcMain
+    globalShortcut
 } = require('electron');
 
 const debug = /--debug/.test(process.argv[2]);
@@ -33,7 +32,7 @@ function initialize() {
         mainWindow = new BrowserWindow(windowOptions);
         mainWindow.loadURL(path.join('file://', __dirname, '/index.html'));
 
-        // Launch fullscreen with DevTools open, usage: npm run debug
+
         if (debug) {
             mainWindow
                 .webContents
@@ -52,6 +51,21 @@ function initialize() {
             mainWindow
                 .webContents
                 .send('run', {});
+        });
+        globalShortcut.register('CommandOrControl+N', () => {
+            mainWindow
+                .webContents
+                .send('new', {});
+        });
+        globalShortcut.register('CommandOrControl+S', () => {
+            mainWindow
+                .webContents
+                .send('save', {});
+        });
+        globalShortcut.register('CommandOrControl+P', () => {
+            mainWindow
+                .webContents
+                .send('settings', {});
         });
         globalShortcut.register('CommandOrControl+F11', () => {
             if (mainWindow.isFullScreen()) {
@@ -76,7 +90,7 @@ function initialize() {
 
     app.on('activate', () => {
         if (mainWindow === null) {
-            //createWindow();
+            createWindow();
         }
     })
 }

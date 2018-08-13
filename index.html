@@ -5,11 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
     <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-    <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css" />
-    <link rel="stylesheet" href="node_modules/codemirror/theme/monokai.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
+        crossorigin="anonymous">
     <style>
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
         blockquote,
         body,
         dd,
@@ -105,6 +109,7 @@
 
         #actions .actionCont {
             float: left;
+            width: 100%;
         }
 
         #actions .actionItem.hidden {
@@ -119,6 +124,11 @@
             float: left;
             position: relative;
             margin-right: 1px;
+        }
+
+        #actions .actionItem.right {
+            float: right;
+            margin-right: 12px;
         }
 
         #actions .actionItem a.aiButton {
@@ -136,7 +146,7 @@
             height: 59px;
         }
 
-        #actions svg {
+        #actions svg #actions i {
             vertical-align: middle;
             position: relative;
             top: -1px;
@@ -150,6 +160,7 @@
             left: 0;
             right: 0;
             z-index: 99;
+            background-color: #202122;
         }
 
         .windowLabel {
@@ -168,8 +179,17 @@
         .editor,
         .run {
             height: calc(100% - 40px);
+            width: 100%;
             position: relative;
             top: 40px;
+        }
+
+        .run-iframe {
+            height: 100%;
+            width: 100%;
+            position: relative;
+            top: 0px;
+            overflow: hidden;
         }
 
         #p4 {
@@ -183,24 +203,27 @@
         <div id="actions">
             <nav class="actionCont collapsed">
                 <div class="actionItem">
+                    <a class="aiButton" id="new" title="Shortcut: Command/Ctrl + N" href="#new">
+                        <i class="fas fa-plus fa-fw"></i>
+                        New</a>
+                </div>
+
+                <div class="actionItem">
                     <a class="aiButton" id="run" title="Shortcut: Command/Ctrl + Enter" href="#run">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
-                            stroke-linejoin="round" class="feather feather-play">
-                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                        </svg>
+                        <i class="fas fa-play fa-fw"></i>
                         Run</a>
                 </div>
 
-                <div class="actionItem visible ">
+                <div class="actionItem">
                     <a class="aiButton" id="savenew" title="Shortcut: Command/Ctrl + S" href="#save">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
-                            stroke-linejoin="round" class="feather feather-upload-cloud">
-                            <polyline points="16 16 12 12 8 16"></polyline>
-                            <line x1="12" y1="12" x2="12" y2="21"></line>
-                            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
-                            <polyline points="16 16 12 12 8 16"></polyline>
-                        </svg>
+                        <i class="fas fa-save fa-fw"></i>
                         Save</a>
+                </div>
+
+                <div class="actionItem right">
+                    <a class="aiButton" id="settings" title="Shortcut: Command/Ctrl + P" href="#settings">
+                        <i class="fas fa-cog fa-fw"></i>
+                        Settings</a>
                 </div>
             </nav>
         </div>
@@ -282,7 +305,6 @@
         var amdRequire = global.require;
         global.require = nodeRequire;
     </script>
-
     <script>
         // require node modules before loader.js comes in
         var path = require('path');
@@ -361,6 +383,33 @@
             doRun(previewContainer);
         });
 
+        document.querySelector('#new').addEventListener('click', () => {
+            doNew(previewContainer);
+        });
+
+        document.querySelector('#save').addEventListener('click', () => {
+            doSave();
+        });
+
+        document.querySelector('#settings').addEventListener('click', () => {
+            doSettings();
+        });
+
+        function doNew() {
+            htmlEditor.model.setValue("");
+            cssEditor.model.setValue("");
+            jsEditor.model.setValue("");
+            doRun(previewContainer);
+        }
+
+        function doSave() {
+            alert("Coming soon...");
+        }
+
+        function doSettings() {
+            alert("Coming soon...");
+        }
+
         function doRun(runContainer) {
             if (runIframe) {
                 // Unload old iframe
@@ -373,8 +422,6 @@
             runIframe.src = 'runner.html';
             runIframe.className = 'run-iframe';
             runIframe.style.boxSizing = 'border-box';
-            runIframe.style.height = '100%';
-            runIframe.style.width = '100%';
             runIframe.style.border = '0';
             runIframe.frameborder = '0';
             runContainer.appendChild(runIframe);
@@ -386,6 +433,7 @@
         }
     </script>
     <script>
+        //require('./editors.js');
         require('./renderer.js');
     </script>
 </body>

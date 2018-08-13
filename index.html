@@ -195,6 +195,91 @@
         #p4 {
             background-color: #fdfdfd;
         }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        .dropdown>a:before,
+        .dropdown>button:before {
+            position: absolute;
+            right: 12px;
+            top: 60px;
+            content: ' ';
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid black;
+        }
+
+        .dropdown input[type=checkbox] {
+            position: absolute;
+            display: block;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            opacity: 0;
+        }
+
+        .dropdown input[type=checkbox]:checked {
+            position: fixed;
+            z-index: +0;
+            top: 0px;
+            left: 0px;
+            right: 0px;
+            bottom: 0px;
+        }
+
+        .dropdown ul {
+            position: absolute;
+            top: 60px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            right: 12px;
+            width: auto;
+            list-style: none;
+            padding: 4px 0px;
+            display: none;
+            background-color: white;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, .175);
+        }
+
+        .dropdown input[type=checkbox]:checked+ul {
+            display: block;
+        }
+
+        .dropdown ul li {
+            display: block;
+            padding: 6px;
+            white-space: nowrap;
+            min-width: 100px;
+            color: #111111;
+            line-height: 1em;
+        }
+
+        .dropdown ul li:hover {
+            background-color: #F5F5F5;
+            cursor: pointer;
+        }
+
+        .dropdown ul li a {
+            text-decoration: none;
+            display: block;
+            color: black
+        }
+
+        .dropdown .divider {
+            height: 1px;
+            margin: 6px 0;
+            overflow: hidden;
+            background-color: #e5e5e5;
+            font-size: 1px;
+            padding: 0;
+        }
     </style>
 </head>
 
@@ -221,9 +306,23 @@
                 </div>
 
                 <div class="actionItem right">
-                    <a class="aiButton" id="settings" title="Shortcut: Command/Ctrl + P" href="#settings">
-                        <i class="fas fa-cog fa-fw"></i>
-                        Settings</a>
+                    <span class="dropdown">
+
+                        <a class="aiButton" id="settings" title="Shortcut: Command/Ctrl + P" href="#settings">
+                            <i class="fas fa-cog fa-fw"></i>
+                            <label>
+                                <input type="checkbox">
+                                <ul>
+                                    <li onclick="console.log(1)">Action</li>
+                                    <li>Another Action</li>
+                                    <li>Something else here</li>
+                                    <li class="divider"></li>
+                                    <li>Separated link</li>
+                                </ul>
+                            </label>
+                            Settings</a>
+                    </span>
+
                 </div>
             </nav>
         </div>
@@ -407,7 +506,7 @@
         }
 
         function doSettings() {
-            alert("Coming soon...");
+            //alert("Coming soon...");
         }
 
         function doRun(runContainer) {

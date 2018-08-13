@@ -1,8 +1,15 @@
-require('update-electron-app')({logger: require('electron-log')});
+require('update-electron-app')({
+    logger: require('electron-log')
+});
 
 const path = require('path');
 const glob = require('glob');
-const {app, BrowserWindow} = require('electron');
+const {
+    app,
+    BrowserWindow,
+    globalShortcut,
+    ipcMain
+} = require('electron');
 
 const debug = /--debug/.test(process.argv[2]);
 
@@ -10,15 +17,15 @@ let mainWindow = null;
 
 function initialize() {
     const shouldQuit = makeSingleInstance();
-    if (shouldQuit) 
+    if (shouldQuit)
         return app.quit();
-    
+
     function createWindow() {
         const windowOptions = {
             width: 1080,
             minWidth: 680,
             height: 840,
-            title: app.getName()
+            title: 'JSester'
         };
 
         if (process.platform === 'linux') {}
@@ -39,11 +46,26 @@ function initialize() {
 
         mainWindow.on('closed', () => {
             mainWindow = null;
-        })
+        });
+
+        globalShortcut.register('CommandOrControl+Enter', () => {
+            mainWindow
+                .webContents
+                .send('run', {});
+        });
+        globalShortcut.register('CommandOrControl+F11', () => {
+            if (mainWindow.isFullScreen()) {
+                mainWindow.maximize();
+            } else {
+                mainWindow.unmaximize();
+            }
+            mainWindow.setFullScreen(!mainWindow.isFullScreen());
+        });
     }
 
     app.on('ready', () => {
         createWindow();
+
     })
 
     app.on('window-all-closed', () => {
@@ -54,18 +76,18 @@ function initialize() {
 
     app.on('activate', () => {
         if (mainWindow === null) {
-            createWindow();
+            //createWindow();
         }
     })
 }
 
 function makeSingleInstance() {
-    if (process.mas) 
+    if (process.mas)
         return false;
 
     return app.makeSingleInstance(() => {
         if (mainWindow) {
-            if (mainWindow.isMinimized()) 
+            if (mainWindow.isMinimized())
                 mainWindow.restore();
             mainWindow.focus();
         }

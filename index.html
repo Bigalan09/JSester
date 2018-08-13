@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+    <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css" />
+    <link rel="stylesheet" href="node_modules/codemirror/theme/monokai.css" />
+    <style>
+        blockquote,
+        body,
+        dd,
+        div,
+        dl,
+        dt,
+        fieldset,
+        form,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        input,
+        li,
+        ol,
+        p,
+        pre,
+        td,
+        textarea,
+        th,
+        ul {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        #editor {
+            height: calc(100vh - 60px);
+        }
+
+        #editor .panel-h,
+        #editor .panel-v {
+            overflow: auto;
+            position: relative;
+        }
+
+        #editor .panel-v {
+            float: left;
+            height: 100%;
+        }
+
+        #editor .gutter.gutter-vertical {
+            cursor: ns-resize;
+        }
+
+        #editor .gutter.gutter-horizontal {
+            cursor: ew-resize;
+            height: 100%;
+            float: left;
+        }
+
+        #editor .gutter {
+            background: #2d333b;
+            position: relative;
+        }
+
+        body {
+            background-color: #20262e;
+            color: #cfd0d2;
+            font-family: "Source Code Pro", "Lucida Console", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+            font-size: 12px;
+            line-height: 1.4em;
+            box-sizing: border-box;
+        }
+
+        #header {
+            height: 60px;
+            background-color: #20262e;
+            border-bottom: 1px solid #30363e;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header">Hello World!</div>
+    <div id="editor">
+        <div class="panel-v left" style="width: calc(50% - 0.5px);">
+            <div id="p1" class="panel-h panel" style="height: calc(50% - 0.5px);">
+            </div>
+            <div id="p2" class="panel-h panel" style="height: calc(50% - 0.5px);">
+            </div>
+        </div>
+        <div class="panel-v right" style="width: calc(50% - 0.5px);">
+            <div id="p3" class="panel-h panel" style="height: calc(50% - 0.5px);">
+            </div>
+            <div id="p4" class="panel-h panel" style="height: calc(50% - 0.5px);">Preview</div>
+        </div>
+    </div>
+    <script src="split.js"></script>
+    <script>
+        Split(['.panel-v.left', '.panel-v.right'], {
+            gutterSize: 2,
+            cursor: 'col-resize'
+        });
+
+        Split(['#p1', '#p2'], {
+            direction: 'vertical',
+            sizes: [50, 50],
+            gutterSize: 2,
+            cursor: 'row-resize'
+        })
+
+        Split(['#p3', '#p4'], {
+            direction: 'vertical',
+            sizes: [50, 50],
+            gutterSize: 2,
+            cursor: 'row-resize'
+        })
+
+        let htmlArea = document.querySelector('#html-editor');
+        let cssArea = document.querySelector('#css-editor');
+        let jsArea = document.querySelector('#js-editor');
+    </script>
+    <script>
+        // Monaco uses a custom amd loader that overrides node's require.
+        // Keep a reference to node's require so we can restore it after executing the amd loader file.
+        var nodeRequire = global.require;
+    </script>
+    <script src="node_modules/monaco-editor/min/vs/loader.js"></script>
+    <script>
+        // Save Monaco's amd require and restore Node's require
+        var amdRequire = global.require;
+        global.require = nodeRequire;
+    </script>
+
+    <script>
+        // require node modules before loader.js comes in
+        var path = require('path');
+
+        function uriFromPath(_path) {
+            var pathName = path.resolve(_path).replace(/\\/g, '/');
+            if (pathName.length > 0 && pathName.charAt(0) !== '/') {
+                pathName = '/' + pathName;
+            }
+            return encodeURI('file://' + pathName);
+        }
+        amdRequire.config({
+            baseUrl: uriFromPath(path.join(__dirname, 'node_modules/monaco-editor/min'))
+        });
+        // workaround monaco-css not understanding the environment
+        self.module = undefined;
+        // workaround monaco-typescript not understanding the environment
+        self.process.browser = true;
+        amdRequire(['vs/editor/editor.main'], function () {
+            let htmlEditor = monaco.editor.create(document.getElementById('p1'), {
+                language: 'html',
+                roundedSelection: false,
+                scrollBeyondLastLine: false,
+                readOnly: false,
+                automaticLayout: true,
+                theme: "vs-dark",
+                minimap: {
+                    enabled: false
+                }
+            });
+            let cssEditor = monaco.editor.create(document.getElementById('p3'), {
+                language: 'css',
+                roundedSelection: false,
+                scrollBeyondLastLine: false,
+                readOnly: false,
+                automaticLayout: true,
+                theme: "vs-dark",
+                minimap: {
+                    enabled: false
+                }
+            });
+            let jsEditor = monaco.editor.create(document.getElementById('p2'), {
+                language: 'javascript',
+                roundedSelection: false,
+                scrollBeyondLastLine: false,
+                readOnly: false,
+                automaticLayout: true,
+                theme: "vs-dark",
+                minimap: {
+                    enabled: false
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

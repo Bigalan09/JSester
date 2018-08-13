@@ -69,7 +69,7 @@
         }
 
         body {
-            background-color: #20262e;
+            background-color: #1e1e1e;
             color: #cfd0d2;
             font-family: "Source Code Pro", "Lucida Console", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
             font-size: 12px;
@@ -77,28 +77,173 @@
             box-sizing: border-box;
         }
 
+        a {
+            outline: none;
+        }
+
         #header {
             height: 60px;
-            background-color: #20262e;
-            border-bottom: 1px solid #30363e;
-            box-sizing: border-box;
+            background: #1a1a1e;
+            box-shadow: 0 0 5px rgba(28, 33, 40, 0.5);
+            position: relative;
+            z-index: 100;
+            width: 100vw;
+        }
+
+        #editor .panel-h,
+        #editor .panel-v {
+            overflow: hidden;
+        }
+
+        #p4 {
+            background-color: #ffffff;
+        }
+
+        #actions {
+            height: 60px;
+            font-size: 14px;
+            position: relative;
+            z-index: 300;
+            margin-left: 6px;
+        }
+
+        #actions .actionCont {
+            float: left;
+        }
+
+        #actions .actionItem.hidden {
+            display: none;
+        }
+
+        #actions .actionItem.visible {
+            display: block;
+        }
+
+        #actions .actionItem {
+            float: left;
+            position: relative;
+            margin-right: 1px;
+        }
+
+        #actions .actionItem a.aiButton {
+            display: block;
+            outline: none;
+            text-decoration: none;
+            padding: 0 8px;
+            line-height: 60px;
+            color: #fbfbfb;
+        }
+
+        #actions .actionItem .aiButton,
+        #actions .actionItem .aiButton span,
+        #actions .dropdown .actionItem a.aiButton {
+            height: 59px;
+        }
+
+        #actions svg {
+            vertical-align: middle;
+            position: relative;
+            top: -1px;
+            height: 16px;
+        }
+
+        .windowLabelCont {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 99;
+        }
+
+        .windowLabel {
+            font-size: 12px;
+            z-index: 30;
+            color: #cfd0d2;
+            line-height: 23px;
+            padding: 7px 0 7px 10px;
+            display: inline-block;
+        }
+
+        .windowLabel {
+            text-decoration: none;
+        }
+
+        .editor {
+            height: calc(100% - 40px);
+            position: relative;
+            top: 40px;
         }
     </style>
 </head>
 
 <body>
-    <div id="header">Hello World!</div>
+    <div id="header">
+        <div id="actions">
+            <nav class="actionCont collapsed">
+                <div class="actionItem">
+                    <a class="aiButton" id="run" title="Shortcut: Command/Ctrl + Enter" href="#run">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
+                            stroke-linejoin="round" class="feather feather-play">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        Run</a>
+                </div>
+
+                <div class="actionItem visible ">
+                    <a class="aiButton" id="savenew" title="Shortcut: Command/Ctrl + S" href="#save">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
+                            stroke-linejoin="round" class="feather feather-upload-cloud">
+                            <polyline points="16 16 12 12 8 16"></polyline>
+                            <line x1="12" y1="12" x2="12" y2="21"></line>
+                            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                            <polyline points="16 16 12 12 8 16"></polyline>
+                        </svg>
+                        Save</a>
+                </div>
+            </nav>
+        </div>
+    </div>
     <div id="editor">
         <div class="panel-v left" style="width: calc(50% - 0.5px);">
             <div id="p1" class="panel-h panel" style="height: calc(50% - 0.5px);">
+                <div id="htmlEditor" class="editor"></div>
+                <div class="windowLabelCont">
+                    <a href="#" class="windowLabel" data-panel="html" data-popover-trigger="html">
+                        <span class="label">HTML</span>
+
+                    </a>
+                </div>
             </div>
             <div id="p2" class="panel-h panel" style="height: calc(50% - 0.5px);">
+                <div id="jsEditor" class="editor"></div>
+                <div class="windowLabelCont">
+                    <a href="#" class="windowLabel">
+                        <span class="label">Javascript (pure JS)</span>
+
+                    </a>
+                </div>
             </div>
         </div>
         <div class="panel-v right" style="width: calc(50% - 0.5px);">
             <div id="p3" class="panel-h panel" style="height: calc(50% - 0.5px);">
+                <div id="cssEditor" class="editor"></div>
+                <div class="windowLabelCont">
+                    <a href="#" class="windowLabel">
+                        <span class="label">CSS</span>
+
+                    </a>
+                </div>
             </div>
-            <div id="p4" class="panel-h panel" style="height: calc(50% - 0.5px);">Preview</div>
+            <div id="p4" class="panel-h panel" style="height: calc(50% - 0.5px);">
+                <div class="windowLabelCont">
+                    <a href="#" class="windowLabel">
+                        <span class="label">Preview</span>
+
+                    </a>
+                </div>
+                <div id="preview"></div>
+            </div>
         </div>
     </div>
     <script src="split.js"></script>
@@ -122,9 +267,9 @@
             cursor: 'row-resize'
         })
 
-        let htmlArea = document.querySelector('#html-editor');
-        let cssArea = document.querySelector('#css-editor');
-        let jsArea = document.querySelector('#js-editor');
+        let htmlArea = document.querySelector('#htmlEditor');
+        let cssArea = document.querySelector('#cssEditor');
+        let jsArea = document.querySelector('#jsEditor');
     </script>
     <script>
         // Monaco uses a custom amd loader that overrides node's require.
@@ -157,7 +302,7 @@
         // workaround monaco-typescript not understanding the environment
         self.process.browser = true;
         amdRequire(['vs/editor/editor.main'], function () {
-            let htmlEditor = monaco.editor.create(document.getElementById('p1'), {
+            let htmlEditor = monaco.editor.create(htmlArea, {
                 language: 'html',
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
@@ -168,7 +313,7 @@
                     enabled: false
                 }
             });
-            let cssEditor = monaco.editor.create(document.getElementById('p3'), {
+            let cssEditor = monaco.editor.create(cssArea, {
                 language: 'css',
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
@@ -179,7 +324,7 @@
                     enabled: false
                 }
             });
-            let jsEditor = monaco.editor.create(document.getElementById('p2'), {
+            let jsEditor = monaco.editor.create(jsArea, {
                 language: 'javascript',
                 roundedSelection: false,
                 scrollBeyondLastLine: false,

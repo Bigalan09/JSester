@@ -33,6 +33,8 @@ function initialize() {
                 .openDevTools()
             mainWindow.maximize();
             require('devtron').install();
+        } else {
+            mainWindow.setMenu(null);
         }
 
         mainWindow.on('closed', () => {

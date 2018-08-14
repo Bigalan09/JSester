@@ -307,8 +307,7 @@
 
                 <div class="actionItem right">
                     <span class="dropdown">
-
-                        <a class="aiButton" id="settings" title="Shortcut: Command/Ctrl + P" href="#settings">
+                        <a class="aiButton" id="preferences" title="Shortcut: Command/Ctrl + P" href="#preferences">
                             <i class="fas fa-cog fa-fw"></i>
                             <label>
                                 <input type="checkbox">
@@ -317,10 +316,12 @@
                                     <li>Another Action</li>
                                     <li>Something else here</li>
                                     <li class="divider"></li>
-                                    <li>Separated link</li>
+                                    <li>
+                                        https://github.com/Bigalan09/JSester
+                                    </li>
                                 </ul>
                             </label>
-                            Settings</a>
+                            Preferences</a>
                     </span>
 
                 </div>
@@ -370,7 +371,6 @@
     </div>
     <script src="split.js"></script>
     <script>
-
         Split(['.panel-v.left', '.panel-v.right'], {
             gutterSize: 2,
             cursor: 'col-resize'
@@ -418,12 +418,27 @@
             return false;
         });
         Mousetrap.bind(['command+p', 'ctrl+p'], function () {
-            doSettings();
+            doPreferences();
             return false;
         });
 
         Mousetrap.bind(['command+enter', 'ctrl+enter'], function () {
             doRun(previewContainer);
+            return false;
+        });
+
+        Mousetrap.bind(['command+1', 'ctrl+1'], function () {
+            switchPanel(1);
+            return false;
+        });
+
+        Mousetrap.bind(['command+2', 'ctrl+2'], function () {
+            switchPanel(2);
+            return false;
+        });
+
+        Mousetrap.bind(['command+3', 'ctrl+3'], function () {
+            switchPanel(3);
             return false;
         });
 
@@ -483,38 +498,24 @@
                 }
             });
 
-            let saveBinding = {
-                id: 'save-bind',
 
-                // A label of the action that will be presented to the user.
-                label: 'Save',
-
-                // An optional array of keybindings for the action.
-                keybindings: [
-                    monaco.KeyMod.CtrlCmd | monaco.KeyCode.S,
-                ],
-
-                // A precondition for this action.
-                precondition: null,
-
-                // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
-                keybindingContext: null,
-
-                contextMenuGroupId: 'navigation',
-
-                contextMenuOrder: 1.5,
-
-                // Method that will be executed when the action is triggered.
-                // @param editor The editor instance is passed in as a convinience
-                run: function (ed) {
-                    doSave();
-                    return null;
-                }
-            };
-            htmlEditor.addAction(saveBinding);
-            cssEditor.addAction(saveBinding);
-            jsEditor.addAction(saveBinding);
-
+            addCommand([htmlEditor, cssEditor, jsEditor], [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_N], doNew);
+            addCommand([htmlEditor, cssEditor, jsEditor], [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S],
+                doSave);
+            addCommand([htmlEditor, cssEditor, jsEditor], [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_P],
+                doPreferences);
+            addCommand([htmlEditor, cssEditor, jsEditor], [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter], () => {
+                doRun(previewContainer);
+            });
+            addCommand([htmlEditor, cssEditor, jsEditor], [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_1], () => {
+                switchPanel(1);
+            });
+            addCommand([htmlEditor, cssEditor, jsEditor], [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_2], () => {
+                switchPanel(2);
+            });
+            addCommand([htmlEditor, cssEditor, jsEditor], [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_3], () => {
+                switchPanel(3);
+            });
             /*
             htmlEditor.onDidChangeModelContent((a, b, c) => {
                 doRun(previewContainer);
@@ -536,16 +537,39 @@
         });
 
         document.querySelector('#new').addEventListener('click', () => {
-            doNew(previewContainer);
+            doNew();
         });
 
         document.querySelector('#save').addEventListener('click', () => {
             doSave();
         });
 
-        document.querySelector('#settings').addEventListener('click', () => {
-            doSettings();
+        document.querySelector('#preferences').addEventListener('click', () => {
+            //doPreferences();
         });
+
+        function addCommand(editors, command, callback) {
+            for (let editor of editors) {
+                editor.addCommand(command, callback);
+            }
+        }
+
+        function switchPanel(panel) {
+            switch (panel) {
+                case 1:
+                    htmlEditor.focus();
+                    break;
+                case 2:
+                    cssEditor.focus();
+                    break;
+                case 3:
+                    jsEditor.focus();
+                    break;
+                default:
+                    //
+                    break;
+            }
+        }
 
         function doNew() {
             htmlEditor.model.setValue("");
@@ -558,8 +582,8 @@
             alert("Coming soon...");
         }
 
-        function doSettings() {
-            //alert("Coming soon...");
+        function doPreferences() {
+            document.querySelector('#preferences input[type="checkbox"]').click();
         }
 
         function doRun(runContainer) {

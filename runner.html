@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <style id="loader">
+    <meta charset="UTF-8">
+    <style id="css">
         #loading .spinner {
             margin: 100px auto;
             width: 50px;
@@ -63,16 +65,6 @@
             }
         }
     </style>
-    <script type="text/javascript">
-        var receivedCall = null;
-        window.load = function (js, html, css) {
-            receivedCall = {
-                js: js,
-                html: html,
-                css: css
-            };
-        };
-    </script>
 </head>
 
 <body>
@@ -85,42 +77,23 @@
             <div class="rect5"></div>
         </div>
     </div>
-
-    <script type="text/javascript">
-        var geval = eval;
-        var loading = document.getElementById('loading');
-        loading.parentNode.removeChild(loading);
-        var loader = document.getElementById('loader');
-        loader.parentNode.removeChild(loader);
-
-        document.body.style.height = '100%';
-
-        window.load = function (js, html, css) {
-            if (css) {
-                var style = document.createElement("style");
-                style.type = "text/css";
-                style.innerHTML = css;
-                document.body.appendChild(style);
-            }
-            if (html) {
-                document.body.innerHTML += html;
-                
-            }
-            if (js) {
-                try {
-                    geval(js);
-                } catch (err) {
-                    var pre = document.createElement("pre");
-                    pre.appendChild(document.createTextNode(err));
-                    document.body.insertBefore(pre, document.body.firstChild);
-                }
-            }
-        };
-
-        if (receivedCall) {
-            window.load(receivedCall.js, receivedCall.html, receivedCall.css);
-        }
-    </script>
 </body>
+<script type="text/javascript" id="js">
+</script>
+
+<script>
+    const ipcRenderer = require('electron').ipcRenderer;
+    ipcRenderer.on('updater', (event, type, content) => {
+        if (type === 'html') {
+            document.body.innerHTML = content;
+        }
+        if (type === 'css') {
+            document.head.querySelector('#css').textContent = content;
+        }
+        if (type === 'javascript') {
+            eval.call(null, content);
+        }
+    });
+</script>
 
 </html>

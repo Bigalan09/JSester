@@ -312,12 +312,13 @@
                             <label>
                                 <input type="checkbox">
                                 <ul>
-                                    <li onclick="console.log(1)">Action</li>
+                                    <li onclick="toggleAutorun()">Toggle Autorun (
+                                        <span id="toggleAutorunLabel">OFF</span>)</li>
                                     <li>Another Action</li>
                                     <li>Something else here</li>
                                     <li class="divider"></li>
-                                    <li>
-                                        https://github.com/Bigalan09/JSester
+                                    <li onclick="aHref('https://github.com/Bigalan09/JSester')">
+                                        View on GitHub.com
                                     </li>
                                 </ul>
                             </label>
@@ -395,6 +396,11 @@
         let jsArea = document.querySelector('#jsEditor');
 
         var Mousetrap = require('mousetrap');
+
+        function aHref(URL) {
+            let opn = require('opn');
+            opn(URL);
+        }
     </script>
     <script>
         // Monaco uses a custom amd loader that overrides node's require.
@@ -447,6 +453,7 @@
         let cssEditor = null;
         let jsEditor = null;
         let previewContainer = document.querySelector('#preview');
+        let autorun = false;
 
         function uriFromPath(_path) {
             var pathName = path.resolve(_path).replace(/\\/g, '/');
@@ -521,6 +528,18 @@ b {
                 }
             });
 
+            htmlEditor.onDidChangeModelContent(() => {
+                if (autorun)
+                    doRun(previewContainer);
+            });
+            cssEditor.onDidChangeModelContent(() => {
+                if (autorun)
+                    doRun(previewContainer);
+            });
+            jsEditor.onDidChangeModelContent(() => {
+                if (autorun)
+                    doRun(previewContainer);
+            });
 
             addCommand([htmlEditor, cssEditor, jsEditor], [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_N], doNew);
             addCommand([htmlEditor, cssEditor, jsEditor], [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S],
@@ -539,21 +558,11 @@ b {
             addCommand([htmlEditor, cssEditor, jsEditor], [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_3], () => {
                 switchPanel(3);
             });
-            /*
-            htmlEditor.onDidChangeModelContent((a, b, c) => {
-                doRun(previewContainer);
-            });
-            cssEditor.onDidChangeModelContent((a, b, c) => {
-                doRun(previewContainer);
-            });
-            jsEditor.onDidChangeModelContent((a, b, c) => {
-                doRun(previewContainer);
-            });
-            */
+
+            doRun(previewContainer);
         });
 
-        var runIframe = null,
-            runIframeHeight = 0;
+        var webView = null;
 
         document.querySelector('#run').addEventListener('click', () => {
             doRun(previewContainer);
@@ -567,14 +576,15 @@ b {
             doSave();
         });
 
-        document.querySelector('#preferences').addEventListener('click', () => {
-            //doPreferences();
-        });
-
         function addCommand(editors, command, callback) {
             for (let editor of editors) {
                 editor.addCommand(command, callback);
             }
+        }
+
+        function toggleAutorun() {
+            autorun = !autorun;
+            document.getElementById('toggleAutorunLabel').innerHTML = `${autorun ? 'ON': 'OFF'}`;
         }
 
         function switchPanel(panel) {
@@ -598,11 +608,12 @@ b {
             htmlEditor.model.setValue("");
             cssEditor.model.setValue("");
             jsEditor.model.setValue("");
+            clearConsoleLog();
             doRun(previewContainer);
         }
 
         function doSave() {
-            alert("Coming soon...");
+            doRun(previewContainer);
         }
 
         function doPreferences() {
@@ -610,33 +621,44 @@ b {
         }
 
         function doRun(runContainer) {
-            if (runIframe) {
-                // Unload old iframe
-                runContainer.removeChild(runIframe);
+            if (webView) {
+                webView.send('updater', 'html', htmlEditor.model.getValue());
+                webView.send('updater', 'css', cssEditor.model.getValue());
+                webView.send('updater', 'javascript', jsEditor.model.getValue());
+            } else {
+
+                // Load new webview
+                webView = document.createElement('webview');
+                webView.setAttribute('class', 'run-iframe');
+                webView.setAttribute('id', 'runner');
+                webView.setAttribute('src', './runner.html');
+                webView.setAttribute('nodeintegration', 'true');
+                runContainer.appendChild(webView);
+
+                webView.addEventListener('console-message', e => {
+                    appendToConsoleLog(e);
+                });
+
+                webView.addEventListener('dom-ready', () => {
+                    webView.send('updater', 'html', htmlEditor.model.getValue());
+                    webView.send('updater', 'css', cssEditor.model.getValue());
+                    webView.send('updater', 'javascript', jsEditor.model.getValue());
+                });
             }
-
-            // Load new iframe
-            runIframe = document.createElement('iframe');
-            runIframe.id = 'runner';
-            runIframe.src = 'runner.html';
-            runIframe.className = 'run-iframe';
-            runIframe.style.boxSizing = 'border-box';
-            runIframe.style.border = '0';
-            runIframe.frameborder = '0';
-            runContainer.appendChild(runIframe);
-
             jsEditor.trigger('anyString', 'editor.action.formatDocument');
             htmlEditor.trigger('anyString', 'editor.action.formatDocument');
             cssEditor.trigger('anyString', 'editor.action.formatDocument');
-
-            runIframe.addEventListener('load', function (e) {
-                runIframe.contentWindow.load(jsEditor.model.getValue(), htmlEditor.model.getValue(), cssEditor.model
-                    .getValue());
-            });
         }
-        setTimeout(() => {
-            doRun(previewContainer);
-        }, 500)
+
+        let logs = [];
+
+        function appendToConsoleLog(log) {
+            logs.push(log);
+        }
+
+        function clearConsoleLog() {
+            logs = [];
+        }
     </script>
     <script>
         //require('./editors.js');

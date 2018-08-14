@@ -65,18 +65,31 @@
             float: left;
         }
 
-        #editor .gutter {
+        #editor.dark .gutter {
             background: #2d333b;
             position: relative;
         }
 
+        #editor.light .gutter {
+            background: #f0f0ff;
+            position: relative;
+        }
+
         body {
-            background-color: #1e1e1e;
-            color: #cfd0d2;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             font-size: 12px;
             line-height: 1.4em;
             box-sizing: border-box;
+        }
+
+        body.dark {
+            background-color: #1e1e1e;
+            color: #cfd0d2;
+        }
+
+        body.light {
+            background-color: #efe0e2;
+            color: #1e1e1e;
         }
 
         a {
@@ -85,11 +98,14 @@
 
         #header {
             height: 60px;
-            background: #1a1a1e;
-            box-shadow: 0 0 5px rgba(28, 33, 40, 0.5);
             position: relative;
             z-index: 100;
             width: 100vw;
+        }
+
+        #header.dark {
+            background: #1a1a1e;
+            box-shadow: 0 0 5px rgba(28, 33, 40, 0.5);
         }
 
         #editor .panel-h,
@@ -135,7 +151,14 @@
             text-decoration: none;
             padding: 0 8px;
             line-height: 60px;
+        }
+
+        #actions.dark .actionItem a.aiButton {
             color: #fbfbfb;
+        }
+
+        #actions.light .actionItem a.aiButton {
+            color: #1e1e1e;
         }
 
         #actions .actionItem .aiButton,
@@ -158,16 +181,30 @@
             left: 0;
             right: 0;
             z-index: 99;
+        }
+
+        .dark .windowLabelCont {
             background-color: #202122;
+        }
+
+        .light .windowLabelCont {
+            background-color: #fbfbff;
         }
 
         .windowLabel {
             font-size: 12px;
             z-index: 30;
-            color: #cfd0d2;
             line-height: 23px;
             padding: 7px 0 7px 10px;
             display: inline-block;
+        }
+
+        .dark .windowLabel {
+            color: #cfd0d2;
+        }
+
+        .light .windowLabel {
+            color: #1e1e1e;
         }
 
         .windowLabel {
@@ -191,7 +228,7 @@
         }
 
         #p4 {
-            background-color: #fdfdfd;
+            background-color: #ffffff;
         }
 
         .dropdown {
@@ -199,17 +236,6 @@
             display: inline-block;
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             font-size: 14px;
-        }
-
-        .dropdown>a:before,
-        .dropdown>button:before {
-            position: absolute;
-            right: 12px;
-            top: 60px;
-            content: ' ';
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-top: 5px solid black;
         }
 
         .dropdown input[type=checkbox] {
@@ -281,9 +307,9 @@
     </style>
 </head>
 
-<body>
-    <div id="header">
-        <div id="actions">
+<body class="dark">
+    <div id="header" class="dark">
+        <div id="actions" class="dark">
             <nav class="actionCont collapsed">
                 <div class="actionItem">
                     <a class="aiButton" id="new" title="Shortcut: Command/Ctrl + N" href="#new">
@@ -313,7 +339,9 @@
                                     <li onclick="toggleAutorun()">Toggle Autorun -
                                         <span id="toggleAutorunLabel">OFF</span>
                                     </li>
-                                    <li>Another Action</li>
+                                    <li onclick="toggleTheme()">Toggle Theme -
+                                        <span id="toggleThemeLabel">Dark</span>
+                                    </li>
                                     <li>Something else here</li>
                                     <li class="divider"></li>
                                     <li onclick="aHref('https://github.com/Bigalan09/JSester')">
@@ -328,7 +356,7 @@
             </nav>
         </div>
     </div>
-    <div id="editor">
+    <div id="editor" class="dark">
         <div class="panel-v left" style="width: calc(50% - 0.5px);">
             <div id="p1" class="panel-h panel" style="height: calc(50% - 0.5px);">
                 <div id="htmlEditor" class="editor"></div>
@@ -453,6 +481,7 @@
         let jsEditor = null;
         let previewContainer = document.querySelector('#preview');
         let autorun = false;
+        let theme = 'dark';
 
         function uriFromPath(_path) {
             var pathName = path.resolve(_path).replace(/\\/g, '/');
@@ -474,7 +503,7 @@
                 language: 'html',
                 scrollBeyondLastLine: false,
                 automaticLayout: true,
-                theme: "vs-dark",
+                theme: `${(theme === 'dark' ? 'vs-dark' : 'vs-light')}`,
                 minimap: {
                     enabled: false
                 },
@@ -484,7 +513,7 @@
                 language: 'css',
                 scrollBeyondLastLine: false,
                 automaticLayout: true,
-                theme: "vs-dark",
+                theme: `${(theme === 'dark' ? 'vs-dark' : 'vs-light')}`,
                 minimap: {
                     enabled: false
                 },
@@ -513,7 +542,7 @@ b {
             });
             jsEditor = monaco.editor.create(jsArea, {
                 language: 'javascript',
-                theme: "vs-dark",
+                theme: `${(theme === 'dark' ? 'vs-dark' : 'vs-light')}`,
                 scrollBeyondLastLine: false,
                 automaticLayout: true,
                 minimap: {
@@ -583,6 +612,21 @@ b {
         function addCommand(editors, command, callback) {
             for (let editor of editors) {
                 editor.addCommand(command, callback);
+            }
+        }
+
+        function toggleTheme() {
+            theme = (theme === 'dark' ? 'light' : 'dark');
+            monaco.editor.setTheme(`${(theme === 'dark' ? 'vs-dark' : 'vs-light')}`);
+            document.getElementById('toggleThemeLabel').innerHTML = `${theme.toUpperCase()}`;
+            let elems = document.querySelectorAll(`.${(theme === 'dark' ? 'light' : 'dark')}`);
+            let length = elems.length;
+            for (let index = 0; index < length; index++) {
+                let el = elems[index];
+                let currTheme = el.classList[0];
+                console.log(currTheme, theme);
+                el.classList.remove(currTheme);
+                el.classList.add(theme);
             }
         }
 

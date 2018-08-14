@@ -472,9 +472,7 @@
         amdRequire(['vs/editor/editor.main'], function () {
             htmlEditor = monaco.editor.create(htmlArea, {
                 language: 'html',
-                roundedSelection: false,
                 scrollBeyondLastLine: false,
-                readOnly: false,
                 automaticLayout: true,
                 theme: "vs-dark",
                 minimap: {
@@ -484,9 +482,7 @@
             });
             cssEditor = monaco.editor.create(cssArea, {
                 language: 'css',
-                roundedSelection: false,
                 scrollBeyondLastLine: false,
-                readOnly: false,
                 automaticLayout: true,
                 theme: "vs-dark",
                 minimap: {
@@ -518,6 +514,8 @@ b {
             jsEditor = monaco.editor.create(jsArea, {
                 language: 'javascript',
                 theme: "vs-dark",
+                scrollBeyondLastLine: false,
+                automaticLayout: true,
                 minimap: {
                     enabled: false
                 }

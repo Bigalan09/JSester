@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
-        crossorigin="anonymous">
+    <link href="node_modules/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet" />
     <style>
         * {
             -webkit-font-smoothing: antialiased;
@@ -75,7 +73,7 @@
         body {
             background-color: #1e1e1e;
             color: #cfd0d2;
-            font-family: "Source Code Pro", "Lucida Console", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             font-size: 12px;
             line-height: 1.4em;
             box-sizing: border-box;
@@ -254,7 +252,7 @@
 
         .dropdown ul li {
             display: block;
-            padding: 6px;
+            padding: 6px 12px;
             white-space: nowrap;
             min-width: 100px;
             color: #111111;
@@ -312,8 +310,9 @@
                             <label>
                                 <input type="checkbox">
                                 <ul>
-                                    <li onclick="toggleAutorun()">Toggle Autorun (
-                                        <span id="toggleAutorunLabel">OFF</span>)</li>
+                                    <li onclick="toggleAutorun()">Toggle Autorun -
+                                        <span id="toggleAutorunLabel">OFF</span>
+                                    </li>
                                     <li>Another Action</li>
                                     <li>Something else here</li>
                                     <li class="divider"></li>

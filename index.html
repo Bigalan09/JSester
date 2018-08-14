@@ -517,10 +517,6 @@ b {
             });
             jsEditor = monaco.editor.create(jsArea, {
                 language: 'javascript',
-                roundedSelection: false,
-                scrollBeyondLastLine: false,
-                readOnly: false,
-                automaticLayout: true,
                 theme: "vs-dark",
                 minimap: {
                     enabled: false
@@ -535,9 +531,19 @@ b {
                 if (autorun)
                     doRun(previewContainer);
             });
-            jsEditor.onDidChangeModelContent(() => {
-                if (autorun)
-                    doRun(previewContainer);
+            jsEditor.onDidChangeModelContent((data) => {
+
+                let decorations = jsEditor.getModel().getAllDecorations();
+                let error = decorations.filter((e) => {
+                    return (e.options.className.indexOf("squiggly") > -1);
+                }).map(e => e);
+                try {
+                    let r = eval(jsEditor.getModel().getValue());
+                    if (autorun && error.length === 0)
+                        doRun(previewContainer);
+                } catch (e) {
+                    // do nothing.
+                }
             });
 
             addCommand([htmlEditor, cssEditor, jsEditor], [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_N], doNew);

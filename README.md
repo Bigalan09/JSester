@@ -1,6 +1,8 @@
 # JSester
 JSester is an offline tool for testing and showcasing user-created HTML, CSS and JavaScript code snippets, using [Monaco](https://microsoft.github.io/monaco-editor/) and [Electron](https://electronjs.org/).
 
+![Windows Screenshot of JSester.](https://github.com/bigalan09/JSester/raw/master/screenshot.png "Windows Screenshot of JSester.")
+
 ## To Use
 
 To clone and run this repository you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:

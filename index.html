@@ -473,7 +473,8 @@
                 theme: "vs-dark",
                 minimap: {
                     enabled: false
-                }
+                },
+                value: `<h1>Welcome to <b>JSester!</b></h1>`
             });
             cssEditor = monaco.editor.create(cssArea, {
                 language: 'css',
@@ -484,7 +485,29 @@
                 theme: "vs-dark",
                 minimap: {
                     enabled: false
-                }
+                },
+                value: `body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  background-color: #fafafa;
+}
+h1 {
+  font-size: 38px;
+  font-weight: 300;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  background-color: #ffffff;
+  padding: 12px;
+}
+b {
+  font-weight: 500;
+}`
             });
             jsEditor = monaco.editor.create(jsArea, {
                 language: 'javascript',
@@ -611,6 +634,9 @@
                     .getValue());
             });
         }
+        setTimeout(() => {
+            doRun(previewContainer);
+        }, 500)
     </script>
     <script>
         //require('./editors.js');

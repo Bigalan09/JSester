@@ -306,7 +306,6 @@
         }
 
         #console {
-            display: block;
             position: fixed;
             bottom: 0;
             left: 0;
@@ -318,6 +317,14 @@
             color: #222222;
             border-top: 1px solid #444444;
             overflow-y: scroll;
+        }
+
+        #console.hidden {
+            display: none !important;
+        }
+        
+        #console.show {
+            display: block !important;
         }
     </style>
 </head>
@@ -342,6 +349,13 @@
                     <a class="aiButton" id="save" title="Shortcut: Command/Ctrl + S" href="#save">
                         <i class="fas fa-save fa-fw"></i>
                         Save</a>
+                </div>
+
+                <div class="actionItem">
+                    <a class="aiButton" id="consoleBtn" title="Shortcut Command/Ctrl + I" href="#console">
+                        <i class="fas fa-terminal fa-fw"></i>
+                        Console
+                    </a>
                 </div>
 
                 <div class="actionItem right">
@@ -412,7 +426,7 @@
             </div>
         </div>
     </div>
-    <div id="console">
+    <div id="console" class="hidden">
     </div>
     <script src="split.js"></script>
     <script>
@@ -472,6 +486,11 @@
             return false;
         });
 
+        Mousetrap.bind(['command+i', 'ctrl+i'], function () {
+            toggleConsoleWindow();
+            return false;
+        });
+
         Mousetrap.bind(['command+enter', 'ctrl+enter'], function () {
             doRun(previewContainer);
             return false;
@@ -499,6 +518,17 @@
         let previewContainer = document.querySelector('#preview');
         let autorun = false;
         let theme = 'dark';
+
+        function toggleConsoleWindow() {
+            let consoleDiv = document.querySelector('#console');
+            if (consoleDiv.classList.contains('hidden')) {
+                consoleDiv.classList.remove('hidden');
+                consoleDiv.classList.add('show');
+            } else {
+                consoleDiv.classList.remove('show');
+                consoleDiv.classList.add('hidden');
+            }
+        }
 
         function uriFromPath(_path) {
             var pathName = path.resolve(_path).replace(/\\/g, '/');
@@ -576,17 +606,19 @@ b {
                     doRun(previewContainer);
             });
             jsEditor.onDidChangeModelContent((data) => {
+                if (autorun) {
+                    let decorations = jsEditor.getModel().getAllDecorations();
+                    let error = decorations.filter((e) => {
+                        return (e.options.className.indexOf("squiggly") > -1);
+                    }).map(e => e);
 
-                let decorations = jsEditor.getModel().getAllDecorations();
-                let error = decorations.filter((e) => {
-                    return (e.options.className.indexOf("squiggly") > -1);
-                }).map(e => e);
-                try {
-                    let r = eval(jsEditor.getModel().getValue());
-                    if (autorun && error.length === 0)
-                        doRun(previewContainer);
-                } catch (e) {
-                    // do nothing.
+                    try {
+                        let r = eval(jsEditor.getModel().getValue());
+                        if (autorun && error.length === 0)
+                            doRun(previewContainer);
+                    } catch (e) {
+                        // do nothing.
+                    }
                 }
             });
 
@@ -607,6 +639,8 @@ b {
             addCommand([htmlEditor, cssEditor, jsEditor], [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_3], () => {
                 switchPanel(3);
             });
+            addCommand([htmlEditor, cssEditor, jsEditor], [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_I],
+                toggleConsoleWindow);
 
             doRun(previewContainer);
             switchPanel(1);
@@ -624,6 +658,10 @@ b {
 
         document.querySelector('#save').addEventListener('click', () => {
             doSave();
+        });
+
+        document.querySelector('#consoleBtn').addEventListener('click', () => {
+            toggleConsoleWindow();
         });
 
         function addCommand(editors, command, callback) {
@@ -673,7 +711,6 @@ b {
             htmlEditor.model.setValue("");
             cssEditor.model.setValue("");
             jsEditor.model.setValue("");
-            clearConsoleLog();
             doRun(previewContainer);
         }
 
@@ -690,6 +727,7 @@ b {
                 webView.send('updater', 'html', htmlEditor.model.getValue());
                 webView.send('updater', 'css', cssEditor.model.getValue());
                 webView.send('updater', 'javascript', jsEditor.model.getValue());
+                clearConsoleLog();
             } else {
 
                 // Load new webview
@@ -708,12 +746,13 @@ b {
                     webView.send('updater', 'html', htmlEditor.model.getValue());
                     webView.send('updater', 'css', cssEditor.model.getValue());
                     webView.send('updater', 'javascript', jsEditor.model.getValue());
+                    clearConsoleLog();
+
                 });
             }
             jsEditor.trigger('anyString', 'editor.action.formatDocument');
             htmlEditor.trigger('anyString', 'editor.action.formatDocument');
             cssEditor.trigger('anyString', 'editor.action.formatDocument');
-            clearConsoleLog();
         }
 
         let logs = [];
@@ -722,8 +761,8 @@ b {
             logs.push(log);
             document.querySelector('#console').innerHTML = logs.map(log => {
                 let color = '#222222';
-                let title = '[LOG]: ';
-
+                let title = '';
+                let additional = (log.level > 0) ? ` on line: ${log.line} <br />${log.sourceId}` : '';
                 switch (log.level) {
                     case 1:
                         color = 'orange';
@@ -734,7 +773,8 @@ b {
                         title = '[ERROR]: ';
                         break;
                 }
-                return `<span style="color: ${color}">${title} ${JSON.stringify(log)}</span>`;
+                // return `${JSON.stringify(log)}`;
+                return `<span style="color: ${color}">${title}${log.message}${additional}</span>`;
             }).join('<br />');
         }
 
@@ -743,7 +783,6 @@ b {
             document.querySelector('#console').innerHTML = "";
         }
         console.clear = clearConsoleLog;
-
     </script>
     <script>
         //require('./editors.js');

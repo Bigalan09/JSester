@@ -1,14 +1,8 @@
-require('update-electron-app')({
-    logger: require('electron-log')
-});
+require('update-electron-app')({logger: require('electron-log')});
 
 const path = require('path');
 const glob = require('glob');
-const {
-    app,
-    BrowserWindow,
-    globalShortcut
-} = require('electron');
+const {app, BrowserWindow, globalShortcut} = require('electron');
 
 const debug = /--debug/.test(process.argv[2]);
 
@@ -16,9 +10,9 @@ let mainWindow = null;
 
 function initialize() {
     const shouldQuit = makeSingleInstance();
-    if (shouldQuit)
+    if (shouldQuit) 
         return app.quit();
-
+    
     function createWindow() {
         const windowOptions = {
             width: 1080,
@@ -31,7 +25,6 @@ function initialize() {
 
         mainWindow = new BrowserWindow(windowOptions);
         mainWindow.loadURL(path.join('file://', __dirname, '/index.html'));
-
 
         if (debug) {
             mainWindow
@@ -76,12 +69,12 @@ function initialize() {
 }
 
 function makeSingleInstance() {
-    if (process.mas)
+    if (process.mas) 
         return false;
-
+    
     return app.makeSingleInstance(() => {
         if (mainWindow) {
-            if (mainWindow.isMinimized())
+            if (mainWindow.isMinimized()) 
                 mainWindow.restore();
             mainWindow.focus();
         }

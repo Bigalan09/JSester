@@ -304,6 +304,21 @@
             font-size: 1px;
             padding: 0;
         }
+
+        #console {
+            display: block;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 150px;
+            padding: 8px;
+            background-color: #f5f5f5;
+            color: #222222;
+            border-top: 1px solid #444444;
+            overflow-y: scroll;
+        }
     </style>
 </head>
 
@@ -396,6 +411,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div id="console">
     </div>
     <script src="split.js"></script>
     <script>
@@ -624,7 +641,7 @@ b {
             for (let index = 0; index < length; index++) {
                 let el = elems[index];
                 let currTheme = el.classList[0];
-                console.log(currTheme, theme);
+
                 el.classList.remove(currTheme);
                 el.classList.add(theme);
             }
@@ -696,17 +713,37 @@ b {
             jsEditor.trigger('anyString', 'editor.action.formatDocument');
             htmlEditor.trigger('anyString', 'editor.action.formatDocument');
             cssEditor.trigger('anyString', 'editor.action.formatDocument');
+            clearConsoleLog();
         }
 
         let logs = [];
 
         function appendToConsoleLog(log) {
             logs.push(log);
+            document.querySelector('#console').innerHTML = logs.map(log => {
+                let color = '#222222';
+                let title = '[LOG]: ';
+
+                switch (log.level) {
+                    case 1:
+                        color = 'orange';
+                        title = '[WARN]: ';
+                        break;
+                    case 2:
+                        color = 'red';
+                        title = '[ERROR]: ';
+                        break;
+                }
+                return `<span style="color: ${color}">${title} ${JSON.stringify(log)}</span>`;
+            }).join('<br />');
         }
 
         function clearConsoleLog() {
             logs = [];
+            document.querySelector('#console').innerHTML = "";
         }
+        console.clear = clearConsoleLog;
+
     </script>
     <script>
         //require('./editors.js');
